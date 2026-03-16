@@ -60,6 +60,7 @@ def get_novel(slug: str, db: Session = Depends(get_db)):
                 name=char.name,
                 description=char.description,
                 image_url=char.image_url,
+                highlight_color=char.highlight_color,
                 aliases=[a.alias for a in char.aliases],
             )
             for char in novel.characters
@@ -80,6 +81,7 @@ def add_character(slug: str, character: CharacterCreate, db: Session = Depends(g
         name = character.name,
         description = character.description,
         image_url = character.image_url,
+        highlight_color = character.highlight_color,
         novel_id = novel.id,
     )
 
@@ -97,6 +99,7 @@ def add_character(slug: str, character: CharacterCreate, db: Session = Depends(g
         name=new_char.name,
         description=new_char.description,
         image_url=new_char.image_url,
+        highlight_color=new_char.highlight_color,
         aliases=[a.alias for a in new_char.aliases],
     )
 

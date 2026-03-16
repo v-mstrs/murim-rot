@@ -33,6 +33,7 @@ class Character(Base):
     name: Mapped[str] = mapped_column(String, nullable=False)
     description: Mapped[str | None] = mapped_column(Text, nullable=True)
     image_url: Mapped[str | None] = mapped_column(String, nullable=True)
+    highlight_color: Mapped[str | None] = mapped_column(String(32), nullable=True)
 
 
     novel: Mapped[Novel] = relationship(back_populates="characters")

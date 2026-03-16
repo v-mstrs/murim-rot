@@ -13,6 +13,7 @@ class NovelCharacterView(BaseModel):
     name: str
     description: str | None = None
     image_url: str | None = None
+    highlight_color: str | None = None
     aliases: list[str] = Field(default_factory=list)
 
 # NovelDetail inherits all fields from NovelSummary
@@ -26,6 +27,7 @@ class CharacterCreate(BaseModel):
     name: str
     description: str | None = None
     image_url: str | None = None
+    highlight_color: str | None = None
     aliases: list[str] = Field(default_factory=list)
 
 class CharacterResponse(BaseModel):
@@ -34,5 +36,6 @@ class CharacterResponse(BaseModel):
     name: str
     description: str | None = None
     image_url: str | None = None
+    highlight_color: str | None = None
     aliases: list[str] = Field(default_factory=list)
 
