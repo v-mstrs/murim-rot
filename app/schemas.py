@@ -10,6 +10,7 @@ class NovelSummary(BaseModel):
     slug: str
 
 class NovelCharacterView(BaseModel):
+    id: int
     name: str
     description: str | None = None
     image_url: str | None = None
@@ -24,6 +25,13 @@ class NovelDetail(NovelSummary):
     characters: list[NovelCharacterView] = Field(default_factory=list)
 
 class CharacterCreate(BaseModel):
+    name: str
+    description: str | None = None
+    image_url: str | None = None
+    highlight_color: str | None = None
+    aliases: list[str] = Field(default_factory=list)
+
+class CharacterUpdate(BaseModel):
     name: str
     description: str | None = None
     image_url: str | None = None

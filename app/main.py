@@ -1,12 +1,14 @@
 from fastapi import FastAPI, Depends, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy import select
 from sqlalchemy.orm import Session, selectinload
 
 from app.schemas import (
     CharacterCreate,
     CharacterResponse,
+    CharacterUpdate,
     NovelCharacterView,
     NovelCreate,
     NovelDetail,
@@ -57,6 +59,7 @@ def get_novel(slug: str, db: Session = Depends(get_db)):
         slug=novel.slug,
         characters=[
             NovelCharacterView(
+                id=char.id,
                 name=char.name,
                 description=char.description,
                 image_url=char.image_url,
@@ -102,6 +105,65 @@ def add_character(slug: str, character: CharacterCreate, db: Session = Depends(g
         highlight_color=new_char.highlight_color,
         aliases=[a.alias for a in new_char.aliases],
     )
+
+@app.put("/novels/{slug}/characters/{character_id}", response_model=CharacterResponse)
+def update_character(
+    slug: str,
+    character_id: int,
+    payload: CharacterUpdate,
+    db: Session = Depends(get_db),
+):
+    character = db.execute(
+        select(Character)
+        .join(Novel)
+        .where(Novel.slug == slug, Character.id == character_id)
+        .options(selectinload(Character.aliases))
+    ).scalar_one_or_none()
+
+    if not character:
+        raise HTTPException(404, "Character not found.")
+
+    character.name = payload.name
+    character.description = payload.description
+    character.image_url = payload.image_url
+    character.highlight_color = payload.highlight_color
+    character.aliases = [
+        CharacterAlias(alias=alias.strip())
+        for alias in payload.aliases
+        if alias.strip()
+    ]
+
+    try:
+        db.commit()
+    except IntegrityError:
+        db.rollback()
+        raise HTTPException(400, "Character name must be unique within the novel.")
+
+    db.refresh(character)
+
+    return CharacterResponse(
+        id=character.id,
+        novel_id=character.novel_id,
+        name=character.name,
+        description=character.description,
+        image_url=character.image_url,
+        highlight_color=character.highlight_color,
+        aliases=[alias.alias for alias in character.aliases],
+    )
+
+@app.delete("/novels/{slug}/characters/{character_id}", status_code=204)
+def delete_character(slug: str, character_id: int, db: Session = Depends(get_db)):
+    character = db.execute(
+        select(Character)
+        .join(Novel)
+        .where(Novel.slug == slug, Character.id == character_id)
+    ).scalar_one_or_none()
+
+    if not character:
+        raise HTTPException(404, "Character not found.")
+
+    db.delete(character)
+    db.commit()
 
 @app.post("/", response_model=NovelSummary)
 def add_novel(payload: NovelCreate, db: Session = Depends(get_db)):
