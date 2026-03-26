@@ -64,6 +64,9 @@ def get_novel(slug: str, db: Session = Depends(get_db)):
                 description=char.description,
                 image_url=char.image_url,
                 highlight_color=char.highlight_color,
+                family=char.family,
+                alliances=char.alliances,
+                abilities=char.abilities,
                 aliases=[a.alias for a in char.aliases],
             )
             for char in novel.characters
@@ -85,6 +88,9 @@ def add_character(slug: str, character: CharacterCreate, db: Session = Depends(g
         description = character.description,
         image_url = character.image_url,
         highlight_color = character.highlight_color,
+        family = character.family,
+        alliances = character.alliances,
+        abilities = character.abilities,
         novel_id = novel.id,
     )
 
@@ -103,6 +109,9 @@ def add_character(slug: str, character: CharacterCreate, db: Session = Depends(g
         description=new_char.description,
         image_url=new_char.image_url,
         highlight_color=new_char.highlight_color,
+        family=new_char.family,
+        alliances=new_char.alliances,
+        abilities=new_char.abilities,
         aliases=[a.alias for a in new_char.aliases],
     )
 
@@ -127,6 +136,9 @@ def update_character(
     character.description = payload.description
     character.image_url = payload.image_url
     character.highlight_color = payload.highlight_color
+    character.family = payload.family
+    character.alliances = payload.alliances
+    character.abilities = payload.abilities
     character.aliases = [
         CharacterAlias(alias=alias.strip())
         for alias in payload.aliases
@@ -148,6 +160,9 @@ def update_character(
         description=character.description,
         image_url=character.image_url,
         highlight_color=character.highlight_color,
+        family=character.family,
+        alliances=character.alliances,
+        abilities=character.abilities,
         aliases=[alias.alias for alias in character.aliases],
     )
 

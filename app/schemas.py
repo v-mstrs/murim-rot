@@ -15,6 +15,9 @@ class NovelCharacterView(BaseModel):
     description: str | None = None
     image_url: str | None = None
     highlight_color: str | None = None
+    family: str | None = None
+    alliances: str | None = None
+    abilities: str | None = None
     aliases: list[str] = Field(default_factory=list)
 
 # NovelDetail inherits all fields from NovelSummary
@@ -29,6 +32,9 @@ class CharacterCreate(BaseModel):
     description: str | None = None
     image_url: str | None = None
     highlight_color: str | None = None
+    family: str | None = None
+    alliances: str | None = None
+    abilities: str | None = None
     aliases: list[str] = Field(default_factory=list)
 
 class CharacterUpdate(BaseModel):
@@ -36,6 +42,9 @@ class CharacterUpdate(BaseModel):
     description: str | None = None
     image_url: str | None = None
     highlight_color: str | None = None
+    family: str | None = None
+    alliances: str | None = None
+    abilities: str | None = None
     aliases: list[str] = Field(default_factory=list)
 
 class CharacterResponse(BaseModel):
@@ -45,5 +54,8 @@ class CharacterResponse(BaseModel):
     description: str | None = None
     image_url: str | None = None
     highlight_color: str | None = None
+    family: str | None = None
+    alliances: str | None = None
+    abilities: str | None = None
     aliases: list[str] = Field(default_factory=list)
 
