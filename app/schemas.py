@@ -38,7 +38,7 @@ class CharacterCreate(BaseModel):
     aliases: list[str] = Field(default_factory=list)
 
 class CharacterUpdate(BaseModel):
-    name: str
+    name: str | None = None
     description: str | None = None
     image_url: str | None = None
     highlight_color: str | None = None

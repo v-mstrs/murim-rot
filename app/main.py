@@ -132,18 +132,22 @@ def update_character(
     if not character:
         raise HTTPException(404, "Character not found.")
 
-    character.name = payload.name
-    character.description = payload.description
-    character.image_url = payload.image_url
-    character.highlight_color = payload.highlight_color
-    character.family = payload.family
-    character.alliances = payload.alliances
-    character.abilities = payload.abilities
-    character.aliases = [
-        CharacterAlias(alias=alias.strip())
-        for alias in payload.aliases
-        if alias.strip()
-    ]
+    # Only mutate fields explicitly included in the request. This lets clients
+    # update a color without resubmitting (and accidentally replacing) aliases.
+    scalar_updates = payload.model_dump(exclude_unset=True, exclude={"aliases"})
+    for field, value in scalar_updates.items():
+        setattr(character, field, value)
+
+    if "aliases" in payload.model_fields_set:
+        # Flush removals before reinserting aliases so SQLite's unique
+        # constraint does not see the old and replacement rows together.
+        character.aliases.clear()
+        db.flush()
+        character.aliases = [
+            CharacterAlias(alias=alias.strip())
+            for alias in payload.aliases
+            if alias.strip()
+        ]
 
     try:
         db.commit()
